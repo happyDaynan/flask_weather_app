@@ -17,6 +17,11 @@ class City(db.Model):
     name = db.Column(db.String(50), nullable=False)
 
     
+def get_weather_data(city):
+    # weather data api url
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=imperial&appid=271d1234d3f497eed5b1d80a07b3fcd1'
+    r = requests.get(url).json()
+    return r
 
 @app.route('/')
 def index_get():
@@ -24,12 +29,12 @@ def index_get():
     # get db city data
     cities = City.query.all()
 
-    # weather data api url
-    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=271d1234d3f497eed5b1d80a07b3fcd1'
+    
     
     weather_data = []
     for city in cities:
-        r = requests.get(url.format(city.name)).json()
+        
+        r = get_weather_data(city.name)
 
         weather = {
             'city': city.name,
@@ -55,10 +60,18 @@ def index_post():
         existing_city = City.query.filter_by(name=new_city).first()
         
         if not existing_city:
-            new_city_obj = City(name=new_city)
-            db.session.add(new_city_obj)
-            db.session.commit()
+            # chech city whether exist in the world
+            new_city_data = get_weather_data(new_city)
+            
+            if new_city_data['code'] == 200:
+
+                new_city_obj = City(name=new_city)
+
+                db.session.add(new_city_obj)
+                db.session.commit()
+            else:
+                err_msg = 'City does not exist in the world!'
         else:
-            err_msg = 'City already exists!'
+            err_msg = 'City already exists in the database!'
     
     return redirect(url_for('index_get'))
