@@ -22,19 +22,24 @@ class City(db.Model):
 
 @app.route('/')
 def index():
-    city_name = 'Las Vegas'
-    url = f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&units=imperial&appid=271d1234d3f497eed5b1d80a07b3fcd1'
-    r = requests.get(url).json()
+    # get db city data
+    cities = City.query.all()
 
-    weather_data = []
-    weather = {
-        'city': city_name,
-        'temperature' : r['main']['temp'],
-        'description' : r['weather'][0]['description'],
-        'icon' : r['weather'][0]['icon'],
-    }
+    # weather data api url
+    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=271d1234d3f497eed5b1d80a07b3fcd1'
     
-    weather_data.append(weather)
+    weather_data = []
+    for city in cities:
+        r = requests.get(url.format(city.name)).json()
+
+        weather = {
+            'city': city.name,
+            'temperature' : r['main']['temp'],
+            'description' : r['weather'][0]['description'],
+            'icon' : r['weather'][0]['icon'],
+        }
+        
+        weather_data.append(weather)
     
     
     
