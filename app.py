@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -18,18 +18,8 @@ class City(db.Model):
 
     
 
-
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    # if request.method = POST get new city add to weather db
-    if request.method == 'POST':
-        new_city = request.form.get('city')
-        
-        if new_city:
-            new_city_obj = City(name=new_city)
-            db.session.add(new_city_obj)
-            db.session.commit()
+@app.route('/')
+def index_get():
 
     # get db city data
     cities = City.query.all()
@@ -54,3 +44,21 @@ def index():
     
     return render_template('weather.html', weather_data=weather_data)
 
+
+@app.route('/', methods=['POST'])
+def index_post():
+    err_msg = ''
+    new_city = request.form.get('city')
+
+    if new_city:
+        # check new city whether in weather db
+        existing_city = City.query.filter_by(name=new_city).first()
+        
+        if not existing_city:
+            new_city_obj = City(name=new_city)
+            db.session.add(new_city_obj)
+            db.session.commit()
+        else:
+            err_msg = 'City already exists!'
+    
+    return redirect(url_for('index_get'))
