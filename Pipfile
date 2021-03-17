@@ -5,8 +5,9 @@ name = "pypi"
 
 [packages]
 flask = "*"
-flask-sqlalchemy = "*"
 requests = "*"
+flask-sqlalchemy = "*"
+sqlalchemy = "==1.3.20"
 
 [dev-packages]
 
