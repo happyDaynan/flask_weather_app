@@ -63,7 +63,7 @@ def index_post():
             # chech city whether exist in the world
             new_city_data = get_weather_data(new_city)
             
-            if new_city_data['code'] == 200:
+            if new_city_data['cod'] == 200:
 
                 new_city_obj = City(name=new_city)
 
