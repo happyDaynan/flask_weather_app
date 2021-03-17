@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///weather.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'thisissecret'
 
 
 db = SQLAlchemy(app)
@@ -74,4 +75,10 @@ def index_post():
         else:
             err_msg = 'City already exists in the database!'
     
+    # process err_msg use flash 
+    if err_msg:
+        flash(err_msg, 'error')
+    else:
+        flash('City added seccesfully')
+
     return redirect(url_for('index_get'))

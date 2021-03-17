@@ -34,11 +34,17 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="notification is-danger">
-                                <button class="delete"></button>
-                                Primar lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit lorem ipsum dolor. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus diam, et dictum <a>felis venenatis</a> efficitur.
-                        </div>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                {% set message_class = 'is-success' %}
+                                {% if category == 'error' %}
+                                    {% set message_class = 'is-danger' %}
+                                {% endif %}
+                                <div class="notification {{message_class}}">{{message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
                     </form>
                 </div>
             </div>
