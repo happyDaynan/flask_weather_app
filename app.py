@@ -20,8 +20,17 @@ class City(db.Model):
 
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    # if request.method = POST get new city add to weather db
+    if request.method == 'POST':
+        new_city = request.form.get('city')
+        
+        if new_city:
+            new_city_obj = City(name=new_city)
+            db.session.add(new_city_obj)
+            db.session.commit()
+
     # get db city data
     cities = City.query.all()
 
